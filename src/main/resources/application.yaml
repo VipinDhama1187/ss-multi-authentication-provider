@@ -1,0 +1,29 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/test_oauth_db
+    #assignmentDB
+    username: pgadmin 
+    #postgres
+    password: pgadmin 
+    #postgres
+    dbcp2:
+      initial-size: 50
+      max-idle: 50
+      default-query-timeout: 10000
+      default-auto-commit: true
+    
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        default_schema: spring_security_multi_auth_schema
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+
+key: abcde
