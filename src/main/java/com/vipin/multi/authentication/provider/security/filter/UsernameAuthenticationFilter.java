@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -26,25 +27,25 @@ import com.vipin.multi.authentication.provider.service.OtpService;
 //@Component
 public class UsernameAuthenticationFilter extends OncePerRequestFilter {
 
-	// @Autowired
+	 @Autowired
 	private AuthenticationManager manager;
 
-	// @Autowired
+	 @Autowired
 	private OtpService otpService;
 
-	// @Autowired
+	 @Autowired
 	private UserDetailsService usernamePasswordService;
 
+	 @Autowired
 	private TokenManager tokenManager;
 
-	public UsernameAuthenticationFilter(AuthenticationManager manager, OtpService otpService,
-			UserDetailsService usernamePasswordService, TokenManager tokenManager) {
-		super();
-		this.manager = manager;
-		this.otpService = otpService;
-		this.usernamePasswordService = usernamePasswordService;
-		this.tokenManager = tokenManager;
-	}
+	/*
+	 * public UsernameAuthenticationFilter(AuthenticationManager manager, OtpService
+	 * otpService, UserDetailsService usernamePasswordService, TokenManager
+	 * tokenManager) { super(); this.manager = manager; this.otpService =
+	 * otpService; this.usernamePasswordService = usernamePasswordService;
+	 * this.tokenManager = tokenManager; }
+	 */
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

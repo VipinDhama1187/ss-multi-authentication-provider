@@ -7,8 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,12 +18,12 @@ import com.vipin.multi.authentication.provider.security.authentications.Username
 
 public class UserAuthorizationAuthenticationFilter extends OncePerRequestFilter {
 
+	@Autowired
 	private AuthenticationManager manager;
-
-	public UserAuthorizationAuthenticationFilter(AuthenticationManager manager) {
-		super();
-		this.manager = manager;
-	}
+	/*
+	 * public UserAuthorizationAuthenticationFilter(AuthenticationManager manager) {
+	 * super(); this.manager = manager; }
+	 */
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
