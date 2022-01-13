@@ -13,7 +13,10 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+import com.vipin.multi.authentication.provider.model.TokenManager;
+import com.vipin.multi.authentication.provider.security.filter.UserAuthorizationAuthenticationFilter;
 import com.vipin.multi.authentication.provider.security.filter.UsernameAuthenticationFilter;
+import com.vipin.multi.authentication.provider.security.providers.UsernameAuthorizationAuthenticationProvider;
 import com.vipin.multi.authentication.provider.service.OtpService;
 
 @SuppressWarnings("deprecation")
@@ -26,14 +29,20 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private AuthenticationProvider usernameOtpAuthenticationProvider;
 
-	//@Autowired
-	//private UsernameAuthenticationFilter usernameAuthenticationFilter;
+	// @Autowired
+	// private UsernameAuthenticationFilter usernameAuthenticationFilter;
 	
+	@Autowired
+	private UsernameAuthorizationAuthenticationProvider usernameAuthorizationAuthenticationProvider;
+
 	@Autowired
 	private OtpService otpService;
-	
+
 	@Autowired
 	private UserDetailsService usernamePasswordService;
+
+	@Autowired
+	private TokenManager tokenManager;
 
 	/**
 	 * creating AuthenticationManager for sending the Authentication object from
@@ -44,10 +53,16 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
-	
+
+	@Bean("userAuthorizationAuthenticationFilter ")
+	public UserAuthorizationAuthenticationFilter userAuthorizationAuthenticationFilter() throws Exception {
+		return new UserAuthorizationAuthenticationFilter(authenticationManagerBean());
+	}
+
 	@Bean("usernameAuthenticationFilter")
 	public UsernameAuthenticationFilter userAuthenticationFilter() throws Exception {
-		return new UsernameAuthenticationFilter(authenticationManagerBean(), otpService, usernamePasswordService);
+		return new UsernameAuthenticationFilter(authenticationManagerBean(), otpService, usernamePasswordService,
+				tokenManager);
 	}
 
 	@Bean
@@ -58,12 +73,14 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(usernamePasswordAuthenticationProvider)
-				.authenticationProvider(usernameOtpAuthenticationProvider);
+				.authenticationProvider(usernameOtpAuthenticationProvider)
+				.authenticationProvider(usernameAuthorizationAuthenticationProvider);
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.addFilterAt(userAuthenticationFilter(), BasicAuthenticationFilter.class);
+		http.addFilterAt(userAuthenticationFilter(), BasicAuthenticationFilter.class)
+				.addFilterAfter(userAuthorizationAuthenticationFilter(), BasicAuthenticationFilter.class);
 	}
 
 }

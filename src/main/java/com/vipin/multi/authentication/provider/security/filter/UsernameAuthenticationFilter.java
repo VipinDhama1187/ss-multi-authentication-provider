@@ -18,6 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.vipin.multi.authentication.provider.entity.Otp;
 import com.vipin.multi.authentication.provider.model.SecurityUserDetails;
+import com.vipin.multi.authentication.provider.model.TokenManager;
 import com.vipin.multi.authentication.provider.security.authentications.UsernameOtpAuthentication;
 import com.vipin.multi.authentication.provider.security.authentications.UsernamePasswordAuthentication;
 import com.vipin.multi.authentication.provider.service.OtpService;
@@ -25,26 +26,26 @@ import com.vipin.multi.authentication.provider.service.OtpService;
 //@Component
 public class UsernameAuthenticationFilter extends OncePerRequestFilter {
 
-	//@Autowired
+	// @Autowired
 	private AuthenticationManager manager;
 
-	//@Autowired
+	// @Autowired
 	private OtpService otpService;
 
-	//@Autowired
+	// @Autowired
 	private UserDetailsService usernamePasswordService;
-	
-	
+
+	private TokenManager tokenManager;
 
 	public UsernameAuthenticationFilter(AuthenticationManager manager, OtpService otpService,
-			UserDetailsService usernamePasswordService) {
+			UserDetailsService usernamePasswordService, TokenManager tokenManager) {
 		super();
 		this.manager = manager;
 		this.otpService = otpService;
 		this.usernamePasswordService = usernamePasswordService;
+		this.tokenManager = tokenManager;
 	}
 
-	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
@@ -83,7 +84,10 @@ public class UsernameAuthenticationFilter extends OncePerRequestFilter {
 				Authentication authentication = new UsernameOtpAuthentication(username, otp, null);
 				authentication = manager.authenticate(authentication);
 				if (authentication.isAuthenticated()) {
-					response.setHeader("Authorization", UUID.randomUUID().toString());
+					String auuid = UUID.randomUUID().toString();
+					this.tokenManager.addToken(auuid);
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+					response.setHeader("Authorization", auuid);
 				}
 			}
 		} catch (AuthenticationException e) {
